@@ -1,0 +1,797 @@
+/* PresupuestosPro: mobile-first. Desktop rules live under @media (min-width: 768px).
+   Design tokens are defined ONLY in :root (single source for the app and the PDF, FR-111).
+   Never redefine them inside @media: the PDF reads them and must be identical on every device. */
+
+:root {
+  /* Color */
+  --color-primary: #1f3a5f;
+  --color-primary-hover: #152a45;
+  --color-primary-soft: #e3ebf6;
+  --color-on-primary: #ffffff;
+  --color-text: #1b2430;
+  --color-muted: #5a6472;
+  --color-border-strong: #8a94a3;
+  --color-border: #d9dee5;
+  --color-bg: #f6f7f9;
+  --color-surface: #ffffff;
+  --color-danger: #a1271f;
+  --color-danger-soft: #fbe9e7;
+  --color-warning: #6b4a00;
+  --color-warning-soft: #fdf3dc;
+  --color-success: #1e6b3a;
+  --color-success-soft: #e5f3ea;
+
+  /* Quote status. Only draft and issued are used; the rest are reserved (FR-104). */
+  --status-draft: #475467;
+  --status-draft-soft: #eef1f5;
+  --status-issued: #1f3a5f;
+  --status-issued-soft: #e3ebf6;
+  --status-sent: #1d4f91;
+  --status-sent-soft: #e6effa;
+  --status-accepted: #1e6b3a;
+  --status-accepted-soft: #e5f3ea;
+  --status-rejected: #a1271f;
+  --status-rejected-soft: #fbe9e7;
+  --status-expired: #8a5a00;
+  --status-expired-soft: #fdf3dc;
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --text-xl: 1.5rem;
+  --text-lg: 1.125rem;
+  --text-md: 1rem;
+  --text-sm: 0.875rem;
+  --text-total: 1.375rem;
+  --leading: 1.5;
+  --leading-tight: 1.2;
+
+  /* Spacing and shape */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --radius-sm: 4px;
+  --radius: 8px;
+  --touch: 44px;
+  --header-height: 56px;
+  --content-max: 960px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Keep the hidden attribute working on elements with an explicit display. */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--leading);
+  color: var(--color-text);
+  background: var(--color-bg);
+  overflow-x: hidden;
+}
+
+img,
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+}
+
+/* iOS Safari zooms in on focused fields below 16px (FR-024). */
+input,
+select,
+textarea {
+  font-size: var(--text-md);
+  font-family: inherit;
+}
+
+h1,
+h2 {
+  line-height: var(--leading-tight);
+  color: var(--color-text);
+}
+
+h1 {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  margin: 0 0 var(--space-5);
+}
+
+h2 {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin: 0 0 var(--space-3);
+}
+
+p {
+  margin: 0 0 var(--space-3);
+}
+
+a {
+  color: var(--color-primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.amount,
+.line-amount,
+.summary td:last-child,
+.stat-value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Header and navigation (FR-107 – FR-110) ---------- */
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--header-height);
+  padding: 0 max(var(--space-4), calc((100% - var(--content-max)) / 2 + var(--space-4)));
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+  margin-right: auto;
+  color: var(--color-primary);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.menu-toggle {
+  width: var(--touch);
+  height: var(--touch);
+  padding: 0;
+  font-size: var(--text-lg);
+}
+
+.main-nav {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  flex-direction: column;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-header.is-open .main-nav {
+  display: flex;
+}
+
+.main-nav a {
+  display: flex;
+  align-items: center;
+  min-height: var(--touch);
+  padding: 0 var(--space-2);
+  color: var(--color-muted);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+
+.main-nav a:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.main-nav a[aria-current="page"] {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+
+/* ---------- Layout ---------- */
+
+main {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-4);
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+/* Inside a card (quote editor header) the title block sits closer to its fields. */
+.card .page-header {
+  margin-bottom: var(--space-4);
+}
+
+.hint,
+.muted {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+.notice {
+  background: var(--color-warning-soft);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+  color: var(--color-warning);
+  font-size: var(--text-sm);
+}
+
+.success {
+  color: var(--color-success);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+/* ---------- Forms (FR-117) ---------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.field label,
+.field .label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.field input[type="text"],
+.field input[type="email"],
+.field input[type="tel"],
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: var(--touch);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.field textarea {
+  min-height: calc(var(--touch) * 2);
+}
+
+.field:has(.error:not(:empty)) :is(input, select, textarea) {
+  border-color: var(--color-danger);
+}
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
+
+.choices label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch);
+  font-weight: 400;
+  font-size: var(--text-md);
+}
+
+.choices input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-primary);
+}
+
+.readonly .field input,
+.readonly .field select,
+.readonly .field textarea,
+.readonly input,
+.readonly select,
+.readonly textarea,
+.field :is(input, select, textarea):disabled {
+  background: var(--color-bg);
+  color: var(--color-muted);
+  border-color: var(--color-border);
+}
+
+.logo-preview {
+  max-width: 240px;
+  max-height: 80px;
+  display: block;
+  margin-bottom: var(--space-2);
+  object-fit: contain;
+}
+
+/* ---------- Buttons ---------- */
+
+button,
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch);
+  min-width: var(--touch);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button:hover,
+.button:hover {
+  background: var(--color-primary-soft);
+}
+
+button.primary,
+.button.primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+button.primary:hover,
+button.primary:active,
+.button.primary:hover,
+.button.primary:active {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+button.danger {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+button.danger:hover {
+  background: var(--color-danger-soft);
+}
+
+button:disabled {
+  background: var(--color-bg);
+  border-color: var(--color-border);
+  color: var(--color-muted);
+  cursor: not-allowed;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ---------- Messages ---------- */
+
+#message:empty {
+  display: none;
+}
+
+#message {
+  max-width: var(--content-max);
+  margin: var(--space-4) auto 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-danger-soft);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius);
+  color: var(--color-danger);
+}
+
+#message .actions {
+  margin-top: var(--space-2);
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
+
+.error:empty {
+  display: none;
+}
+
+.blockers {
+  margin: 0 0 var(--space-3);
+  padding-left: var(--space-5);
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
+
+.blockers:empty {
+  display: none;
+}
+
+/* ---------- Status label (FR-115): text + dot + border style, never color alone ---------- */
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-2);
+  border: 1px solid;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: var(--leading);
+  white-space: nowrap;
+}
+
+.status--draft {
+  color: var(--status-draft);
+  background: var(--status-draft-soft);
+  border-style: dashed;
+}
+
+.status--issued {
+  color: var(--status-issued);
+  background: var(--status-issued-soft);
+  border-style: solid;
+}
+
+/* ---------- Home (FR-102 – FR-105) ---------- */
+
+.stats {
+  display: grid;
+  /* As many columns as fit: three at 360 px, fewer with enlarged text (FR-118). */
+  grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+  gap: var(--space-3);
+  margin: 0 0 var(--space-3);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.stat-value {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+}
+
+.stat-label {
+  color: var(--color-muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.home-links {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.home-link {
+  display: block;
+  min-height: var(--touch);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-link:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.home-link-title {
+  display: block;
+  margin-bottom: var(--space-1);
+  color: var(--color-primary);
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+/* ---------- Generic lists (quotes, catalog): cards on mobile ---------- */
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list-header {
+  display: none;
+}
+
+.list-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-1) var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+  color: inherit;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.list-item .amount {
+  font-weight: 700;
+  text-align: right;
+}
+
+a.list-item:hover {
+  background: var(--color-primary-soft);
+}
+
+.quote-row .q-number { grid-column: 1; font-weight: 700; }
+.quote-row .q-status { grid-column: 2; text-align: right; }
+.quote-row .q-client { grid-column: 1; }
+.quote-row .q-total { grid-column: 2; }
+.quote-row .q-date { grid-column: 1 / -1; }
+
+.service-row .s-name { grid-column: 1; font-weight: 600; }
+.service-row .s-price { grid-column: 2; }
+.service-row .s-actions { grid-column: 1 / -1; }
+
+/* ---------- Quote editor ---------- */
+
+.line {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  background: var(--color-bg);
+}
+
+.line-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-2);
+}
+
+.line-fields .f-description {
+  grid-column: 1 / -1;
+}
+
+.line-fields .field {
+  margin-bottom: 0;
+}
+
+.line-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.line-amount {
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.lines-header {
+  display: none;
+}
+
+/* Totals (FR-114): the final total is the most prominent amount of the screen. */
+.summary {
+  border-color: var(--color-border-strong);
+}
+
+.summary table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--space-3);
+}
+
+.summary td {
+  padding: var(--space-1) 0;
+  font-size: var(--text-md);
+}
+
+.summary td:last-child {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.summary .total td {
+  border-top: 2px solid var(--color-primary);
+  padding-top: var(--space-2);
+  font-size: var(--text-total);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* ---------- Desktop ---------- */
+
+@media (min-width: 768px) {
+  .menu-toggle {
+    display: none;
+  }
+
+  .main-nav,
+  .app-header.is-open .main-nav {
+    display: flex;
+    position: static;
+    flex-direction: row;
+    gap: var(--space-1);
+    padding: 0;
+    border: none;
+    background: none;
+  }
+
+  .main-nav a {
+    padding: 0 var(--space-3);
+  }
+
+  .home-links {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  /* Lists become tables. */
+  .list-header,
+  .list-item {
+    display: grid;
+    align-items: center;
+    border-radius: 0;
+    margin: 0;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .list-header {
+    gap: var(--space-1) var(--space-3);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    background: var(--color-bg);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .list-header .q-status {
+    text-align: right;
+  }
+
+  .list {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .quote-row,
+  .list-header.quotes {
+    grid-template-columns: 110px minmax(0, 1fr) 120px 140px 110px;
+  }
+
+  .quote-row > *,
+  .list-header.quotes > * {
+    grid-column: auto !important;
+    grid-row: 1;
+  }
+
+  .quote-row .q-number { order: 1; }
+  .quote-row .q-client { order: 2; }
+  .quote-row .q-date { order: 3; }
+  .quote-row .q-total { order: 4; text-align: right; }
+  .quote-row .q-status { order: 5; }
+
+  .service-row,
+  .list-header.services {
+    grid-template-columns: minmax(0, 1fr) 160px 220px;
+  }
+
+  .service-row > *,
+  .list-header.services > * {
+    grid-column: auto !important;
+    grid-row: 1;
+  }
+
+  .service-row .s-actions {
+    justify-content: flex-end;
+  }
+
+  /* Quote lines become a table row. */
+  .lines-header,
+  .line-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 90px 120px 90px 110px 52px;
+    gap: var(--space-2);
+    align-items: start;
+  }
+
+  .lines-header {
+    font-weight: 600;
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    background: var(--color-bg);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+  }
+
+  .line {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    border-radius: 0;
+    margin: 0;
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .line-fields,
+  .line-footer {
+    display: contents;
+  }
+
+  .line-fields .f-description {
+    grid-column: auto;
+  }
+
+  .line-footer button {
+    padding: 0;
+  }
+
+  .line-fields .field > label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .line-amount {
+    align-self: center;
+    text-align: right;
+    font-size: var(--text-md);
+  }
+
+  .line .line-errors {
+    grid-column: 1 / -1;
+  }
+}
